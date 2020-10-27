@@ -8,6 +8,15 @@
 #include <SFML/Window.hpp>
 #include <SFML/Audio.hpp>
 
+
+template <typename T>
+T& atCoords(std::vector< std::vector<T> >& data, sf::Vector2i coords)
+{
+    return data[coords.x][coords.y];
+}
+
+int modulo(int a, int b);
+
 int randomI(int min, int max);
 
 // random integer with target - n numbers generated within range and then one closest to target is chosen
@@ -32,3 +41,7 @@ sf::Color randomColor(std::vector<float> lightRange);
 float dotProduct(sf::Vector2f a, sf::Vector2f b);
 
 std::string trailingZeroes(float number, int zeroes = 2);
+
+std::vector<sf::Color> colorGradient(sf::Color start, sf::Color end, int stepTotal);
+
+std::vector<sf::Color> generatePalette(int colorTotal);

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <time.h>
+#include <memory>
 #include <math.h>
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
@@ -10,6 +11,7 @@
 #include <SFML/Audio.hpp>
 
 #include "commons.hpp"
+#include "board.hpp"
 
 
 using namespace std;
@@ -18,6 +20,21 @@ int main()
 {
     srand(time(NULL));
 
+    BoardSettings bSetts =
+    {
+	GridShape::Square,
+	sf::FloatRect(0, 0, 800, 800),
+	sf::Vector2f(10, 10),
+	6,
+	30,
+	{sf::Vector2i( 0, -1),
+	 sf::Vector2i( 1,  0),
+	 sf::Vector2i( 0,  1),
+	 sf::Vector2i(-1,  0)}
+    };
+
+    shared_ptr<BoardSettings> shr_bSetts = make_shared<BoardSettings>(bSetts);
+
     sf::RenderWindow window(sf::VideoMode(800, 800), "Clear Asteroids");
     window.setFramerateLimit(60);
     
@@ -25,9 +42,11 @@ int main()
     window.setView(actionView);
 
     enum GameState{Menu, Play, Scores};
-    GameState currState = GameState::Menu;
+    GameState currState = GameState::Play;
     bool hasFocus = true;
     int ticksPassed = 0;
+
+    Board board(shr_bSetts);
 
     while(window.isOpen())
     {
@@ -77,7 +96,8 @@ int main()
 	switch(currState)
 	{	
 	    case GameState::Play:
-		
+		board.tick(ticksPassed);
+		board.draw(window);
 		break;
 	}
 
