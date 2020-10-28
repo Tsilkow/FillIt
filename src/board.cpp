@@ -4,7 +4,7 @@
 bool Vector2iComparator::operator()(const sf::Vector2i& a, const sf::Vector2i& b)
 {
     if(a.x < b.x) return true;
-    if(a.y < b.y) return true;
+    if(a.x == b.x && a.y < b.y) return true;
     return false;
 }
 
@@ -16,17 +16,24 @@ Board::Board(std::shared_ptr<BoardSettings> bSetts):
 
     generate();
 
-    std::vector<sf::Color> palette = generatePalette(m_bSetts->colorsTotal);
+    std::vector<sf::Color> palette = generatePalette(m_bSetts->colorTotal);
 
-    m_gradients = std::vector< std::vector<sf::Color> >(m_bSetts->colorsTotal, std::vector<sf::Color>());
-    for(int i = 0; i < m_bSetts->colorsTotal; ++i)
+    m_gradients = std::vector< std::vector<sf::Color> >(m_bSetts->colorTotal, std::vector<sf::Color>());
+    for(int i = 0; i < m_bSetts->colorTotal; ++i)
     {
 	m_gradients[i] = colorGradient(palette[i], sf::Color(255, 255, 255), m_bSetts->colorStepTotal);
+	/*for(int j = 0; j < m_gradients[i].size(); ++j)
+	{
+	    std::cout << i << "|" << j << " = ("
+		      << (int)m_gradients[i][j].r << ", "
+		      << (int)m_gradients[i][j].g << ", "
+		      << (int)m_gradients[i][j].b << ")" << std::endl;
+		      }*/
     }
     
     for(int x = 0; x < m_bSetts->dimensions.x; ++x)
     {
-	for(int y = 0; y < m_bSetts->dimensions.x; ++y)
+	for(int y = 0; y < m_bSetts->dimensions.y; ++y)
 	{
 	    std::vector<sf::Vector2f> position = {
 		sf::Vector2f( x   *tileSize,  y   *tileSize),
@@ -51,22 +58,25 @@ void Board::generate()
 					     std::vector<int>(m_bSetts->dimensions.y, 0));
     for(int x = 0; x < m_bSetts->dimensions.x; ++x)
     {
-	for(int y = 0; y < m_bSetts->dimensions.x; ++y)
+	for(int y = 0; y < m_bSetts->dimensions.y; ++y)
 	{
-	    m_data[x][y] = randomI(1, m_bSetts->colorsTotal);
+	    m_data[x][y] = randomI(1, m_bSetts->colorTotal);
 	}
     }
 
     m_currCluster.emplace_back(0, 0);
     m_currColor = m_data[0][0]-1;
+    m_newColor = m_currColor;
     m_currStep = 0;
+
+    expand();
 }
 
 void Board::update()
 {
     for(int i = 0; i < m_currCluster.size(); ++i)
     {
-	int index = m_currCluster[i].y * m_bSetts->dimensions.x + m_currCluster[i].x;
+	int index = m_currCluster[i].x * m_bSetts->dimensions.y + m_currCluster[i].y;
 	int verticeTotal = 0;
 
 	switch(m_bSetts->gridShape)
@@ -81,11 +91,13 @@ void Board::update()
 	{
 	    if(m_currStep < m_bSetts->colorStepTotal)
 	    {
-		m_representation[index + j].color = m_gradients[m_currColor][m_currStep];
+		m_representation[index + j].color =
+		    m_gradients[m_currColor][m_currStep];
 	    }
 	    else
 	    {
-		m_representation[index + j].color = m_gradients[m_newColor ][m_currStep];
+		m_representation[index + j].color =
+		    m_gradients[m_newColor ][2*m_bSetts->colorStepTotal-1 - m_currStep];
 	    }
 	    
 	}
@@ -105,17 +117,20 @@ bool Board::expand()
     while(queue.size() > 0)
     {
 	sf::Vector2i current = queue[0];
+	queue.erase(queue.begin());
 
 	for(int i = 0; i < m_bSetts->neighbourhood.size(); ++i)
 	{
 	    sf::Vector2i neighbour = current + m_bSetts->neighbourhood[i];
 	    
-	    if(neighbour.x >= 0 && neighbour.x <= m_bSetts->dimensions.x &&
-	       neighbour.y >= 0 && neighbour.y <= m_bSetts->dimensions.y &&
-	       visited.find(current + m_bSetts->neighbourhood[i]) == visited.end() &&
-	       atCoords(m_data, neighbour) == m_newColor)
+	    if(neighbour.x >= 0 && neighbour.x < m_bSetts->dimensions.x &&
+	       neighbour.y >= 0 && neighbour.y < m_bSetts->dimensions.y &&
+	       visited.find(neighbour) == visited.end() &&
+	       atCoords(m_data, neighbour) == m_newColor+1)
 	    {
 		m_currCluster.emplace_back(neighbour);
+		//std::cout << "EXPANDED: ";
+		//printVector(neighbour, true);
 		queue.push_back(neighbour);
 		visited.insert(neighbour);
 	    }
@@ -127,7 +142,7 @@ bool Board::expand()
 
 bool Board::changeColor(int newColor)
 {
-    if(m_currStep == 0)
+    if(newColor != m_currColor && m_currStep == 0 && newColor < m_bSetts->colorTotal)
     {
 	m_newColor = newColor;
 	m_currStep = 1;
@@ -139,6 +154,8 @@ bool Board::changeColor(int newColor)
 
 bool Board::tick(int ticksPassed)
 {
+    //std::cout << m_currStep << std::endl;
+    
     if(m_currStep != 0)
     {
 	update();
@@ -151,7 +168,7 @@ bool Board::tick(int ticksPassed)
 
 	    for(int i = 0; i < m_currCluster.size(); ++i)
 	    {
-		atCoords(m_data, m_currCluster[i]) = m_currColor;
+		atCoords(m_data, m_currCluster[i]) = m_currColor+1;
 	    }
 	}
     }

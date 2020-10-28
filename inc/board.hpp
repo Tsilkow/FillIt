@@ -19,7 +19,7 @@ struct BoardSettings
     GridShape gridShape;
     sf::FloatRect bounds;
     sf::Vector2f dimensions;
-    int colorsTotal;
+    int colorTotal;
     int colorStepTotal;
     std::vector<sf::Vector2i> neighbourhood;
 };

@@ -15,6 +15,14 @@ int modulo(int a, int b)
     return a;
 }
 
+float modulo(float a, float b)
+{
+    while(a <  0) a += b;
+    while(a >= b) a -=b;
+
+    return a;
+}
+
 int randomI(int min, int max)
 {
     if(min == max) return min;
@@ -89,9 +97,9 @@ std::vector<sf::Color> colorGradient(sf::Color start, sf::Color end, int stepTot
     
     for(int i = 1; i < stepTotal-1; ++i)
     {
-	int r = start.r + ((int)std::round(((float)end.r - start.r) / (stepTotal-1)));
-	int g = start.g + ((int)std::round(((float)end.g - start.g) / (stepTotal-1)));
-	int b = start.b + ((int)std::round(((float)end.b - start.b) / (stepTotal-1)));
+	int r = start.r + ((int)std::round(i * ((float)end.r - (float)start.r) / ((float)stepTotal-1)));
+	int g = start.g + ((int)std::round(i * ((float)end.g - (float)start.g) / ((float)stepTotal-1)));
+	int b = start.b + ((int)std::round(i * ((float)end.b - (float)start.b) / ((float)stepTotal-1)));
 
 	result.emplace_back(r, g, b);
     }
@@ -107,14 +115,16 @@ float colorValue(float point)
     point = modulo(point, 1.f);
     
     if(point <= 1.f/6.f) return point*6.f;
-    if(point <= 2.f/6.f) return 1.f;
-    if(point <= 3.f/6.f) return (3.f-point)*6.f;
+    if(point <= 3.f/6.f) return 1.f;
+    if(point <= 4.f/6.f) return (4.f/6.f - point)*6.f;
     return 0.f;
 }
 
 sf::Color colorFromRange(float point)
 {
-    return sf::Color(colorValue(point - 1.f/6.f), colorValue(point + 1.f/6.f), colorValue(point + 3.f/6.f));
+    return sf::Color(std::round(255.f * colorValue(point + 2.f/6.f)),
+		     std::round(255.f * colorValue(point          )),
+		     std::round(255.f * colorValue(point - 2.f/6.f)));
 }
 
 std::vector<sf::Color> generatePalette(int colorTotal)
@@ -124,7 +134,23 @@ std::vector<sf::Color> generatePalette(int colorTotal)
     for(int i = 0; i < colorTotal; ++i)
     {
 	result.emplace_back(colorFromRange((float)i/(float)colorTotal));
+	std::cout << i << " = ("
+		  << (int)result.back().r << ", "
+		  << (int)result.back().g << ", "
+		  << (int)result.back().b << ")\n";
     }
 
     return result;
+}
+
+void printVector(sf::Vector2i a, bool enter)
+{
+    std::cout << "{" << a.x << ", " << a.y << "}";
+    if(enter) std::cout << std::endl;
+}
+
+void printVector(sf::Vector2f a, bool enter)
+{
+    std::cout << "{" << a.x << ", " << a.y << "}";
+    if(enter) std::cout << std::endl;
 }

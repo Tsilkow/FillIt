@@ -17,6 +17,8 @@ T& atCoords(std::vector< std::vector<T> >& data, sf::Vector2i coords)
 
 int modulo(int a, int b);
 
+float modulo(float a, float b);
+
 int randomI(int min, int max);
 
 // random integer with target - n numbers generated within range and then one closest to target is chosen
@@ -45,3 +47,7 @@ std::string trailingZeroes(float number, int zeroes = 2);
 std::vector<sf::Color> colorGradient(sf::Color start, sf::Color end, int stepTotal);
 
 std::vector<sf::Color> generatePalette(int colorTotal);
+
+void printVector(sf::Vector2i a, bool enter);
+
+void printVector(sf::Vector2f a, bool enter);

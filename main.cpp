@@ -25,7 +25,7 @@ int main()
 	GridShape::Square,
 	sf::FloatRect(0, 0, 800, 800),
 	sf::Vector2f(10, 10),
-	6,
+	2,
 	30,
 	{sf::Vector2i( 0, -1),
 	 sf::Vector2i( 1,  0),
@@ -35,10 +35,10 @@ int main()
 
     shared_ptr<BoardSettings> shr_bSetts = make_shared<BoardSettings>(bSetts);
 
-    sf::RenderWindow window(sf::VideoMode(800, 800), "Clear Asteroids");
+    sf::RenderWindow window(sf::VideoMode(850, 800), "Fill It");
     window.setFramerateLimit(60);
     
-    sf::View actionView(sf::Vector2f(0.f, 0.f), sf::Vector2f(800, 800));
+    sf::View actionView(sf::Vector2f(425.f, 400.f), sf::Vector2f(850, 800));
     window.setView(actionView);
 
     enum GameState{Menu, Play, Scores};
@@ -77,6 +77,42 @@ int main()
 			{
 			    case sf::Keyboard::Escape:
 				window.close();
+				break;
+
+			    case sf::Keyboard::Num1:
+				board.changeColor(0);
+				break;
+
+			    case sf::Keyboard::Num2:
+				board.changeColor(1);
+				break;
+
+			    case sf::Keyboard::Num3:
+				board.changeColor(2);
+				break;
+
+			    case sf::Keyboard::Num4:
+				board.changeColor(3);
+				break;
+
+			    case sf::Keyboard::Num5:
+				board.changeColor(4);
+				break;
+
+			    case sf::Keyboard::Num6:
+				board.changeColor(5);
+				break;
+
+			    case sf::Keyboard::Num7:
+				board.changeColor(6);
+				break;
+
+			    case sf::Keyboard::Num8:
+				board.changeColor(7);
+				break;
+
+			    case sf::Keyboard::Num9:
+				board.changeColor(8);
 				break;
 			}
 		    }
