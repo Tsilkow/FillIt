@@ -22,15 +22,11 @@ int main()
 
     BoardSettings bSetts =
     {
-	GridShape::Square,
+	GridShape::Triangle,
 	sf::FloatRect(0, 0, 800, 800),
-	sf::Vector2f(80, 80),
-	2,
-	30,
-	{sf::Vector2i( 0, -1),
-	 sf::Vector2i( 1,  0),
-	 sf::Vector2i( 0,  1),
-	 sf::Vector2i(-1,  0)}
+	sf::Vector2f(10, 10),
+	4,
+	30
     };
 
     shared_ptr<BoardSettings> shr_bSetts = make_shared<BoardSettings>(bSetts);

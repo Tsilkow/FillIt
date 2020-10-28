@@ -16,12 +16,11 @@ enum GridShape {Triangle, Square, Hexagon};
 
 struct BoardSettings
 {
-    GridShape gridShape;
+    GridShape tileShape;
     sf::FloatRect bounds;
     sf::Vector2f dimensions;
     int colorTotal;
     int colorStepTotal;
-    std::vector<sf::Vector2i> neighbourhood;
 };
 
 struct Vector2iComparator
@@ -36,12 +35,15 @@ class Board
     std::vector< std::vector<int> > m_data;
     std::vector<sf::Vertex> m_representation;
     std::vector< std::vector<sf::Color> > m_gradients;
+    int m_verticeTotal;
 
     std::vector<sf::Vector2i> m_currCluster;
     int m_currColor;
     int m_newColor;
     int m_currStep;
     int m_furthestAway;
+
+    sf::Vector2i getNeighbour(sf::Vector2i coords, int direction);
 
     void generate();
 
