@@ -9,7 +9,8 @@ bool Vector2iComparator::operator()(const sf::Vector2i& a, const sf::Vector2i& b
 }
 
 Board::Board(std::shared_ptr<BoardSettings> bSetts):
-    m_bSetts(bSetts)
+    m_bSetts(bSetts),
+    m_furthestAway(0)
 {
     int tileSize = std::min((int)std::round(m_bSetts->bounds.width / (float)m_bSetts->dimensions.x),
 			    (int)std::round(m_bSetts->bounds.width / (float)m_bSetts->dimensions.x));
@@ -89,15 +90,19 @@ void Board::update()
 
 	for(int j = 0; j < verticeTotal; ++j)
 	{
-	    if(m_currStep < m_bSetts->colorStepTotal)
+	    m_furthestAway = std::max(m_furthestAway, m_currCluster[i].x + m_currCluster[i].y);
+	    // perceived step
+	    int percStep = m_currStep - (m_currCluster[i].x + m_currCluster[i].y);
+	    if(percStep < 0 || percStep >= m_bSetts->colorStepTotal*2);
+	    else if(percStep < m_bSetts->colorStepTotal)
 	    {
 		m_representation[index + j].color =
-		    m_gradients[m_currColor][m_currStep];
+		    m_gradients[m_currColor][percStep];
 	    }
 	    else
 	    {
 		m_representation[index + j].color =
-		    m_gradients[m_newColor ][2*m_bSetts->colorStepTotal-1 - m_currStep];
+		    m_gradients[m_newColor ][2*m_bSetts->colorStepTotal-1 - percStep];
 	    }
 	    
 	}
@@ -160,7 +165,7 @@ bool Board::tick(int ticksPassed)
     {
 	update();
         ++m_currStep;
-	if(m_currStep >= m_bSetts->colorStepTotal*2)
+	if(m_currStep >= m_bSetts->colorStepTotal*2 + m_furthestAway)
 	{
 	    m_currStep = 0;
 	    expand();

@@ -24,7 +24,7 @@ int main()
     {
 	GridShape::Square,
 	sf::FloatRect(0, 0, 800, 800),
-	sf::Vector2f(10, 10),
+	sf::Vector2f(80, 80),
 	2,
 	30,
 	{sf::Vector2i( 0, -1),

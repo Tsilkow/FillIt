@@ -41,6 +41,7 @@ class Board
     int m_currColor;
     int m_newColor;
     int m_currStep;
+    int m_furthestAway;
 
     void generate();
 
